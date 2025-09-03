@@ -12,7 +12,7 @@ function generateKey() {
 
 // Get Key → goes through Linkvertise first
 function getKey() {
-  window.open("https://linkvertise.com/123456/ronash-hub-key", "_blank"); // replace with your link
+  window.open("https://link-hub.net/1392426/izgbI46tRU33", "_blank"); // replace with your link
   const newKey = generateKey();
   localStorage.setItem("ronashKey", newKey);
   localStorage.setItem("ronashTime", Date.now());
