@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ronash Hub - Key System</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      font-family: "Poppins", sans-serif;
+      color: white;
+      overflow: hidden;
+    }
+
+    .container {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.4);
+      text-align: center;
+      width: 350px;
+      animation: fadeIn 1s ease;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+      font-size: 24px;
+      text-shadow: 0 0 10px cyan;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      margin-bottom: 15px;
+      font-size: 16px;
+      outline: none;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.1);
+      color: white;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.6);
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 12px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      margin: 8px;
+      transition: 0.3s;
+      color: white;
+      background: linear-gradient(90deg, #00f260, #0575e6);
+      box-shadow: 0 0 15px rgba(0, 255, 255, 0.5);
+    }
+
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 25px rgba(0, 255, 255, 0.9);
+    }
+
+    #message {
+      margin-top: 15px;
+      font-size: 14px;
+    }
+
+    .success {
+      color: #00ff88;
+      text-shadow: 0 0 10px #00ff88;
+    }
+
+    .error {
+      color: #ff4444;
+      text-shadow: 0 0 10px #ff4444;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0; transform: scale(0.9);}
+      to {opacity: 1; transform: scale(1);}
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔑 Ronash Hub</h1>
+    <input type="text" id="keyInput" placeholder="Enter your key...">
+    <br>
+    <button class="btn" onclick="getKey()">Get Key</button>
+    <button class="btn" onclick="checkKey()">Verify Key</button>
+    <p id="message"></p>
+  </div>
+
+  <script>
+    // ✅ Set your correct key here (same as on your pastebin/text file)
+    const correctKey = "RONASH-12345";  
+
+    function getKey() {
+      // Replace with your real Linkvertise link
+      window.open("https://linkvertise.com/123456/ronash-key", "_blank");
+    }
+
+    function checkKey() {
+      const userKey = document.getElementById("keyInput").value;
+      const message = document.getElementById("message");
+
+      if (userKey === correctKey) {
+        message.textContent = "✅ Access Granted!";
+        message.className = "success";
+        setTimeout(() => {
+          // Where you want to send them after success (example: script file)
+          window.location.href = "https://your-script-link.com"; 
+        }, 1500);
+      } else {
+        message.textContent = "❌ Invalid Key!";
+        message.className = "error";
+      }
+    }
+  </script>
+</body>
+</html>
