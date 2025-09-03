@@ -5,48 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Ronash Hub - Key System</title>
 <style>
-  body {
-    margin: 0; height: 100vh; display: flex; justify-content: center; align-items: center;
-    background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-    font-family: "Poppins", sans-serif; color: white;
-  }
-  .container {
-    background: rgba(0,0,0,0.4); padding: 40px; border-radius: 20px;
-    box-shadow: 0 0 25px rgba(0, 255, 255, 0.4); text-align: center; width: 350px;
-  }
-  input {
-    width: 100%; padding: 12px; border: none; border-radius: 10px;
-    margin-bottom: 15px; font-size: 16px; text-align: center;
-    background: rgba(255,255,255,0.1); color: white;
-  }
-  .btn {
-    padding: 12px 20px; border: none; border-radius: 12px;
-    cursor: pointer; font-size: 16px; font-weight: bold; margin: 8px;
-    color: white; background: linear-gradient(90deg, #00f260, #0575e6);
-    box-shadow: 0 0 15px rgba(0,255,255,0.5); transition: 0.3s;
-  }
-  .btn:hover { transform: scale(1.05); box-shadow: 0 0 25px rgba(0,255,255,0.9); }
-  #message { margin-top: 15px; font-size: 14px; }
-  .success { color: #00ff88; }
-  .error { color: #ff4444; }
-  #loadstringBox {
-    width: 100%; height: 70px; margin-top: 15px; padding: 10px;
-    border-radius: 10px; font-size: 14px; background: rgba(0,0,0,0.2); color: white; display:none;
-  }
+body { font-family: Arial, sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; background:#222; color:white; }
+.container { background:#333; padding:30px; border-radius:15px; text-align:center; width:350px; }
+input { width:90%; padding:10px; margin:10px 0; border-radius:5px; border:none; text-align:center; }
+button { padding:10px 20px; margin:5px; border:none; border-radius:5px; cursor:pointer; background: #0f0; color:#000; font-weight:bold; }
+textarea { width:90%; height:60px; margin-top:15px; display:none; }
 </style>
 </head>
 <body>
+
 <div class="container">
-  <h1>🔑 Ronash Hub</h1>
-  <input type="text" id="keyInput" placeholder="Enter your key..."><br>
-  <button class="btn" onclick="getKey()">Get Key</button>
-  <button class="btn" onclick="checkKey()">Verify Key</button>
+  <h2>🔑 Ronash Hub</h2>
+  <button onclick="generateKey()">Generate Key</button>
+  <br>
+  <input id="keyInput" placeholder="Enter key here">
+  <br>
+  <button onclick="checkKey()">Verify Key</button>
   <p id="message"></p>
   <textarea id="loadstringBox" readonly></textarea>
 </div>
 
 <script>
-const keyLifetime = 24*60*60*1000; // 24h
+// Key expiration: 24 hours
+const keyLifetime = 24*60*60*1000; // in ms
+
+// Store current key and timestamp
+let currentKey = localStorage.getItem("ronashKey") || "";
+let keyTime = parseInt(localStorage.getItem("ronashTime") || "0");
 
 // Generate random key
 function generateKey(){
@@ -55,62 +40,46 @@ function generateKey(){
   for(let i=0;i<8;i++){
     key += chars.charAt(Math.floor(Math.random()*chars.length));
   }
-  return key;
+  currentKey = key;
+  keyTime = Date.now();
+
+  // Save key in localStorage (persists even on page reload)
+  localStorage.setItem("ronashKey", currentKey);
+  localStorage.setItem("ronashTime", keyTime);
+
+  alert("✅ Your key:\n\n" + key + "\n\nValid for 24 hours");
 }
 
-// Get Key → redirects user to Linkvertise
-function getKey(){
-  window.location.href = "https://link-hub.net/1392426/izgbI46tRU33";
-}
-
-// Check if user just came from Linkvertise
-window.onload = function(){
-  // Example: user comes back after Linkvertise redirect
-  if(!localStorage.getItem("ronashKey")){
-    // Generate key automatically
-    const newKey = generateKey();
-    localStorage.setItem("ronashKey", newKey);
-    localStorage.setItem("ronashTime", Date.now());
-    alert("✅ Your Ronash Hub key:\n\n"+newKey+"\n\n(Valid for 24 hours)");
-  }
-}
-
-// Verify Key
+// Verify user key
 function checkKey(){
   const input = document.getElementById("keyInput").value.trim();
-  const savedKey = localStorage.getItem("ronashKey");
-  const savedTime = parseInt(localStorage.getItem("ronashTime"),10);
-  const now = Date.now();
   const msg = document.getElementById("message");
-  const loadBox = document.getElementById("loadstringBox");
+  const box = document.getElementById("loadstringBox");
 
-  if(!savedKey){
-    msg.textContent = "⚠️ Please get a key first!";
-    msg.className = "error";
-    loadBox.style.display = "none";
+  if(input === ""){
+    msg.textContent = "⚠️ Enter a key first!";
+    box.style.display = "none";
     return;
   }
 
-  if(input === savedKey){
-    if(now - savedTime < keyLifetime){
-      msg.textContent = "✅ Access Granted! Your loadstring is below:";
-      msg.className = "success";
-      loadBox.style.display = "block";
-      loadBox.value = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/jonashstudio/RonashOnTop.github.io/refs/heads/main/script.lua"))()';
-      loadBox.select();
+  if(input === currentKey){
+    if(Date.now() - keyTime < keyLifetime){
+      msg.textContent = "✅ Access granted!";
+      box.style.display = "block";
+      box.value = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/jonashstudio/RonashOnTop.github.io/refs/heads/main/script.lua"))()';
+      box.select();
       document.execCommand("copy");
-      alert("📋 Loadstring copied to clipboard!");
+      alert("📋 Loadstring copied!");
     } else {
-      msg.textContent = "⌛ Key expired. Please get a new one.";
-      msg.className = "error";
-      loadBox.style.display = "none";
+      msg.textContent = "⌛ Key expired. Generate a new one.";
+      box.style.display = "none";
     }
   } else {
-    msg.textContent = "❌ Invalid Key!";
-    msg.className = "error";
-    loadBox.style.display = "none";
+    msg.textContent = "❌ Invalid key!";
+    box.style.display = "none";
   }
 }
 </script>
+
 </body>
 </html>
