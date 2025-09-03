@@ -38,7 +38,7 @@ function checkKey() {
       msg.textContent = "✅ Access Granted!";
       msg.className = "success";
       setTimeout(() => {
-        window.location.href = "https://your-script-link.com"; // put your script link here
+        window.location.href = "https://raw.githubusercontent.com/jonashstudio/RonashOnTop.github.io/refs/heads/main/script.lua";"; // put your script link here
       }, 1500);
     } else {
       msg.textContent = "⌛ Key expired. Please get a new one.";
