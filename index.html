@@ -1,11 +1,23 @@
-<!-- Key generator UI -->
-<section id="getKeySection" class="card" style="margin-top:40px;">
-  <h2>Get Ronash Key</h2>
-  <p>Click the button below to open the required link and receive a key (expires in 24 hours).</p>
-  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
-    <button class="button" id="openLinkBtn">Open Link & Get Key</button>
-    <button class="button" id="copyKeyBtn" style="display:none">Copy Key</button>
-    <div id="keyOutput" style="margin-left:8px;color:#7cd3ff;font-weight:700;"></div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ronash Hub Key System</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="particles"></div>
+
+  <div class="card">
+    <h1>Ronash Hub Key</h1>
+    <button class="button" id="generateBtn">Generate Key</button>
+    <div id="keyOutput"></div>
+    <button id="copyKeyBtn" style="display:none;">Copy Key</button>
   </div>
-  <p style="color:#99a3b2;margin-top:10px;font-size:13px">Note: key is issued for 24 hours. Do not share it publicly.</p>
-</section>
+
+  <footer>© 2025 Ronash Hub | Key System</footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
