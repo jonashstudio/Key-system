@@ -19,19 +19,24 @@ const copyBtn = document.getElementById("copyKeyBtn");
 // 24-hour cooldown in milliseconds
 const COOLDOWN = 24 * 60 * 60 * 1000;
 
+function getLastGenerated() {
+  const last = localStorage.getItem("lastGenerated");
+  return last ? parseInt(last) : null;
+}
+
 function canGenerate() {
-  const lastTime = localStorage.getItem("lastGenerated");
-  if (!lastTime) return true;
+  const last = getLastGenerated();
+  if (!last) return true;
   const now = Date.now();
-  return now - lastTime >= COOLDOWN;
+  return now - last >= COOLDOWN;
 }
 
 function getRemainingTime() {
-  const lastTime = localStorage.getItem("lastGenerated");
+  const last = getLastGenerated();
+  if (!last) return 0;
   const now = Date.now();
-  const remaining = COOLDOWN - (now - lastTime);
-  if (remaining <= 0) return 0;
-  return remaining;
+  const remaining = COOLDOWN - (now - last);
+  return remaining > 0 ? remaining : 0;
 }
 
 function formatTime(ms) {
@@ -41,25 +46,30 @@ function formatTime(ms) {
   return `${hours}h ${minutes}m ${seconds}s`;
 }
 
-generateBtn.addEventListener("click", () => {
-  if (!canGenerate()) {
-    const remaining = getRemainingTime();
-    keyOutput.innerHTML = `<span style="color:#ff5555;">You already generated a key! Next key in ${formatTime(remaining)}</span>`;
-    return;
-  }
+function showCooldownMessage() {
+  const remaining = getRemainingTime();
+  keyOutput.innerHTML = `<span style="color:#ff5555;">You already generated a key! Next key in ${formatTime(remaining)}</span>`;
+  copyBtn.style.display = "none";
+}
 
-  // Pick random key from the list
+function generateKey() {
+  // Pick random key
   const key = KEYS[Math.floor(Math.random() * KEYS.length)];
-
-  // Show key and add glow
   keyOutput.innerHTML = `Your Key:<br><span style="font-size:1.2em;">${key}</span>`;
   keyOutput.classList.add("glow");
-
   copyBtn.style.display = "inline-block";
   copyBtn.dataset.key = key;
 
-  // Save generation time to localStorage
+  // Save current time
   localStorage.setItem("lastGenerated", Date.now());
+}
+
+generateBtn.addEventListener("click", () => {
+  if (!canGenerate()) {
+    showCooldownMessage();
+    return;
+  }
+  generateKey();
 });
 
 // Copy key to clipboard
@@ -70,10 +80,9 @@ copyBtn.addEventListener("click", () => {
   setTimeout(() => (copyBtn.textContent = "Copy Key"), 1500);
 });
 
-// On page load, check cooldown
+// On page load, show cooldown if needed
 window.addEventListener("load", () => {
   if (!canGenerate()) {
-    const remaining = getRemainingTime();
-    keyOutput.innerHTML = `<span style="color:#ff5555;">You already generated a key! Next key in ${formatTime(remaining)}</span>`;
+    showCooldownMessage();
   }
 });
