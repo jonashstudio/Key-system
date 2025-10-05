@@ -1,85 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Ronash Hub - Key System</title>
-<style>
-body { font-family: Arial, sans-serif; display:flex; justify-content:center; align-items:center; height:100vh; background:#222; color:white; }
-.container { background:#333; padding:30px; border-radius:15px; text-align:center; width:350px; }
-input { width:90%; padding:10px; margin:10px 0; border-radius:5px; border:none; text-align:center; }
-button { padding:10px 20px; margin:5px; border:none; border-radius:5px; cursor:pointer; background: #0f0; color:#000; font-weight:bold; }
-textarea { width:90%; height:60px; margin-top:15px; display:none; }
-</style>
-</head>
-<body>
-
-<div class="container">
-  <h2>🔑 Ronash Hub</h2>
-  <button onclick="generateKey()">Generate Key</button>
-  <br>
-  <input id="keyInput" placeholder="Enter key here">
-  <br>
-  <button onclick="checkKey()">Verify Key</button>
-  <p id="message"></p>
-  <textarea id="loadstringBox" readonly></textarea>
-</div>
-
-<script>
-// Key expiration: 24 hours
-const keyLifetime = 24*60*60*1000; // in ms
-
-// Store current key and timestamp
-let currentKey = localStorage.getItem("ronashKey") || "";
-let keyTime = parseInt(localStorage.getItem("ronashTime") || "0");
-
-// Generate random key
-function generateKey(){
-  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-  let key = "RONASH-";
-  for(let i=0;i<8;i++){
-    key += chars.charAt(Math.floor(Math.random()*chars.length));
-  }
-  currentKey = key;
-  keyTime = Date.now();
-
-  // Save key in localStorage (persists even on page reload)
-  localStorage.setItem("ronashKey", currentKey);
-  localStorage.setItem("ronashTime", keyTime);
-
-  alert("✅ Your key:\n\n" + key + "\n\nValid for 24 hours");
-}
-
-// Verify user key
-function checkKey(){
-  const input = document.getElementById("keyInput").value.trim();
-  const msg = document.getElementById("message");
-  const box = document.getElementById("loadstringBox");
-
-  if(input === ""){
-    msg.textContent = "⚠️ Enter a key first!";
-    box.style.display = "none";
-    return;
-  }
-
-  if(input === currentKey){
-    if(Date.now() - keyTime < keyLifetime){
-      msg.textContent = "✅ Access granted!";
-      box.style.display = "block";
-      box.value = 'loadstring(game:HttpGet("https://raw.githubusercontent.com/jonashstudio/RonashOnTop.github.io/refs/heads/main/script.lua"))()';
-      box.select();
-      document.execCommand("copy");
-      alert("📋 Loadstring copied!");
-    } else {
-      msg.textContent = "⌛ Key expired. Generate a new one.";
-      box.style.display = "none";
-    }
-  } else {
-    msg.textContent = "❌ Invalid key!";
-    box.style.display = "none";
-  }
-}
-</script>
-
-</body>
-</html>
+<!-- Key generator UI -->
+<section id="getKeySection" class="card" style="margin-top:40px;">
+  <h2>Get Ronash Key</h2>
+  <p>Click the button below to open the required link and receive a key (expires in 24 hours).</p>
+  <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+    <button class="button" id="openLinkBtn">Open Link & Get Key</button>
+    <button class="button" id="copyKeyBtn" style="display:none">Copy Key</button>
+    <div id="keyOutput" style="margin-left:8px;color:#7cd3ff;font-weight:700;"></div>
+  </div>
+  <p style="color:#99a3b2;margin-top:10px;font-size:13px">Note: key is issued for 24 hours. Do not share it publicly.</p>
+</section>
