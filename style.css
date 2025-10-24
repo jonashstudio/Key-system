@@ -82,3 +82,13 @@ button.btn:hover {
 .continue-btn:hover {
   background-color: #218838;
 }
+
+.continue-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
+}
+
+.countdown {
+  color: #ffc107;
+  font-style: italic;
+}
