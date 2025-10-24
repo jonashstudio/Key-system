@@ -1,23 +1,291 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ronash Hub Key System</title>
-  <link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Key System Web (Client-Side Only)</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Arial', sans-serif;
+    }
+
+    body {
+      background-color: #1a1a1a;
+      color: #ffffff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #2c2c2c;
+      padding: 2rem;
+      border-radius: 10px;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+      width: 100%;
+      max-width: 600px;
+      text-align: center;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+      font-size: 2rem;
+    }
+
+    input, button {
+      padding: 0.8rem;
+      margin: 0.5rem 0;
+      width: 100%;
+      border: none;
+      border-radius: 5px;
+    }
+
+    input {
+      background-color: #3a3a3a;
+      color: #fff;
+    }
+
+    button.btn {
+      background-color: #007bff;
+      color: #fff;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    button.btn:hover {
+      background-color: #0056b3;
+    }
+
+    .buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1rem 0;
+    }
+
+    th, td {
+      padding: 0.8rem;
+      border: 1px solid #444;
+    }
+
+    th {
+      background-color: #007bff;
+    }
+
+    a {
+      color: #007bff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    #validation-result {
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <div id="particles"></div>
-
-  <div class="card">
-    <h1>Ronash Hub Key</h1>
-    <button class="button" id="generateBtn">Generate Key</button>
-    <div id="keyOutput"></div>
-    <button id="copyKeyBtn" style="display:none;">Copy Key</button>
+  <div class="container" id="home">
+    <h1>Welcome to Key System</h1>
+    <p>Secure license key management for your scripts (Client-Side Demo).</p>
+    <div class="buttons">
+      <button class="btn" onclick="showSection('register')">Register</button>
+      <button class="btn" onclick="showSection('login')">Login</button>
+    </div>
   </div>
 
-  <footer>© 2025 Ronash Hub | Key System</footer>
+  <div class="container hidden" id="register">
+    <h1>Register</h1>
+    <form id="register-form">
+      <input type="text" id="reg-username" placeholder="Username" required>
+      <input type="password" id="reg-password" placeholder="Password" required>
+      <button type="submit" class="btn">Register</button>
+    </form>
+    <p>Already have an account? <button class="link-btn" onclick="showSection('login')">Login</button></p>
+  </div>
 
-  <script src="script.js"></script>
+  <div class="container hidden" id="login">
+    <h1>Login</h1>
+    <form id="login-form">
+      <input type="text" id="log-username" placeholder="Username" required>
+      <input type="password" id="log-password" placeholder="Password" required>
+      <button type="submit" class="btn">Login</button>
+    </form>
+    <p>Don't have an account? <button class="link-btn" onclick="showSection('register')">Register</button></p>
+  </div>
+
+  <div class="container hidden" id="dashboard">
+    <h1>Dashboard</h1>
+    <button id="logout-btn" class="btn">Logout</button>
+    <h2>Your License Keys</h2>
+    <button id="generate-key-btn" class="btn">Generate New Key</button>
+    <table id="keys-table">
+      <thead>
+        <tr>
+          <th>License Key</th>
+          <th>Status</th>
+          <th>Created At</th>
+        </tr>
+      </thead>
+      <tbody id="keys-body"></tbody>
+    </table>
+    <h2>Validate Key</h2>
+    <form id="validate-key-form">
+      <input type="text" id="validate-key" placeholder="Enter License Key" required>
+      <button type="submit" class="btn">Validate</button>
+    </form>
+    <div id="validation-result"></div>
+  </div>
+
+  <script>
+    // Simulated database using localStorage
+    function getUsers() {
+      return JSON.parse(localStorage.getItem('users')) || [];
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem('users', JSON.stringify(users));
+    }
+
+    function getCurrentUser() {
+      return localStorage.getItem('currentUser');
+    }
+
+    function setCurrentUser(username) {
+      localStorage.setItem('currentUser', username);
+    }
+
+    function getUserKeys(username) {
+      const users = getUsers();
+      const user = users.find(u => u.username === username);
+      return user ? user.keys : [];
+    }
+
+    function saveUserKeys(username, keys) {
+      const users = getUsers();
+      const userIndex = users.findIndex(u => u.username === username);
+      if (userIndex !== -1) {
+        users[userIndex].keys = keys;
+        saveUsers(users);
+      }
+    }
+
+    // Simple hash simulation (not secure, for demo only)
+    function hashPassword(password) {
+      return btoa(password); // Base64 encode as fake hash
+    }
+
+    // Show section
+    function showSection(sectionId) {
+      document.querySelectorAll('.container').forEach(el => el.classList.add('hidden'));
+      document.getElementById(sectionId).classList.remove('hidden');
+    }
+
+    // Register form
+    document.getElementById('register-form')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('reg-username').value;
+      const password = hashPassword(document.getElementById('reg-password').value);
+      const users = getUsers();
+      if (users.find(u => u.username === username)) {
+        alert('Username already exists');
+        return;
+      }
+      users.push({ username, password, keys: [] });
+      saveUsers(users);
+      alert('Registration successful');
+      showSection('login');
+    });
+
+    // Login form
+    document.getElementById('login-form')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const username = document.getElementById('log-username').value;
+      const password = hashPassword(document.getElementById('log-password').value);
+      const users = getUsers();
+      const user = users.find(u => u.username === username && u.password === password);
+      if (!user) {
+        alert('Invalid credentials');
+        return;
+      }
+      setCurrentUser(username);
+      showSection('dashboard');
+      loadKeys();
+    });
+
+    // Load keys
+    function loadKeys() {
+      const username = getCurrentUser();
+      if (!username) return;
+      const keys = getUserKeys(username);
+      const tbody = document.getElementById('keys-body');
+      tbody.innerHTML = '';
+      keys.forEach(key => {
+        const row = document.createElement('tr');
+        row.innerHTML = `<td>${key.licenseKey}</td><td>${key.status}</td><td>${key.createdAt}</td>`;
+        tbody.appendChild(row);
+      });
+    }
+
+    // Generate key
+    document.getElementById('generate-key-btn')?.addEventListener('click', () => {
+      const username = getCurrentUser();
+      if (!username) return;
+      const licenseKey = crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).slice(2);
+      const createdAt = new Date().toISOString();
+      const keys = getUserKeys(username);
+      keys.push({ licenseKey, status: 'active', createdAt });
+      saveUserKeys(username, keys);
+      alert(`New Key: ${licenseKey}`);
+      loadKeys();
+    });
+
+    // Validate key
+    document.getElementById('validate-key-form')?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const licenseKey = document.getElementById('validate-key').value;
+      const username = getCurrentUser();
+      const keys = getUserKeys(username);
+      const key = keys.find(k => k.licenseKey === licenseKey);
+      const resultDiv = document.getElementById('validation-result');
+      if (key && key.status === 'active') {
+        resultDiv.textContent = 'Key is valid!';
+        resultDiv.style.color = 'green';
+      } else {
+        resultDiv.textContent = 'Invalid key';
+        resultDiv.style.color = 'red';
+      }
+    });
+
+    // Logout
+    document.getElementById('logout-btn')?.addEventListener('click', () => {
+      localStorage.removeItem('currentUser');
+      showSection('home');
+    });
+
+    // Initial check
+    if (getCurrentUser()) {
+      showSection('dashboard');
+      loadKeys();
+    } else {
+      showSection('home');
+    }
+  </script>
 </body>
 </html>
