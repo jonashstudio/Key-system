@@ -1,14 +1,15 @@
 // script.js
-let currentStep = 1;
-const totalSteps = 3;
+let currentStep = parseInt(localStorage.getItem('currentStep')) || 1;
+const totalSteps = 2;
+const adWaitTime = 60; // seconds to wait before enabling continue
 const adUrls = [
   'https://workink.net/23PZ/Ronash%20hub',
-  'https://workink.net/23PZ/Ronash%20hub', // Replace with actual ad link for step 2 if available
-  'https://workink.net/23PZ/Ronash%20hub'  // Replace with actual ad link for step 3 if available
+  'https://link-target.net/1424046/HPxPeiwfkobC'
 ];
 
 function updateProgress() {
   document.getElementById('progress').textContent = `Progress: ${currentStep - 1}/${totalSteps}`;
+  localStorage.setItem('currentStep', currentStep);
 }
 
 function showNextStep() {
@@ -21,7 +22,22 @@ function showNextStep() {
 
 function startAd(step) {
   window.open(adUrls[step - 1], '_blank');
-  document.querySelector(`#step${step} .continue-btn`).classList.remove('hidden');
+  document.getElementById(`countdown${step}`).classList.remove('hidden');
+  document.getElementById(`continue${step}`).classList.remove('hidden');
+  
+  let timeLeft = adWaitTime;
+  const countdownEl = document.getElementById(`countdown${step}`);
+  countdownEl.textContent = `Please complete the ad. Continue available in ${timeLeft} seconds...`;
+  
+  const interval = setInterval(() => {
+    timeLeft--;
+    countdownEl.textContent = `Please complete the ad. Continue available in ${timeLeft} seconds...`;
+    if (timeLeft <= 0) {
+      clearInterval(interval);
+      countdownEl.textContent = 'You can now continue.';
+      document.getElementById(`continue${step}`).disabled = false;
+    }
+  }, 1000);
 }
 
 function completeStep(step) {
@@ -41,6 +57,7 @@ function generateKey() {
   
   // Save to localStorage for demo persistence (optional)
   localStorage.setItem('generatedKey', key);
+  localStorage.removeItem('currentStep'); // Reset for next time if needed
 }
 
 // Initial setup
@@ -48,9 +65,8 @@ updateProgress();
 showNextStep();
 
 // Check if key already generated (for demo)
-if (localStorage.getItem('generatedKey')) {
-  currentStep = totalSteps + 1;
+if (localStorage.getItem('generatedKey') && currentStep > totalSteps) {
   updateProgress();
   document.querySelectorAll('.step').forEach(el => el.classList.add('hidden'));
   generateKey(); // Will display the stored key
-}
+                                                                    }
