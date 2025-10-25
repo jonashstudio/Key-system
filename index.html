@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Linkvertise Dashboard Clone</title>
+    <title>Ronash Key System</title>
     <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Configure Tailwind to use Inter font and custom colors -->
@@ -27,8 +27,9 @@
         /* Custom styles to simulate the mountain background effect */
         .bg-mountain {
             background-color: #2c2543;
+            /* Placeholder for the dark mountain image - replaced with a gradient for simplicity */
             background-image: linear-gradient(180deg, rgba(30, 41, 59, 0.9) 0%, rgba(30, 41, 59, 0.5) 100%), 
-                              url('https://placehold.co/1280x720/2c2543/ffffff?text='); /* Placeholder for the dark mountain image */
+                              url('https://placehold.co/1280x720/2c2543/ffffff?text='); 
             background-size: cover;
             background-position: center;
         }
@@ -46,8 +47,8 @@
     <!-- Top Navigation Bar (Header) -->
     <header class="bg-secondary-dark/80 backdrop-blur-sm shadow-lg border-b border-gray-700/50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
-            <!-- Logo/Site Name -->
-            <a href="#" class="text-lg font-extrabold tracking-wider text-gray-50 uppercase">Luarmor</a>
+            <!-- Logo/Site Name - Changed to Ronash -->
+            <a href="#" class="text-lg font-extrabold tracking-wider text-gray-50 uppercase">Ronash</a>
             
             <!-- Menu Button (Hamburger) -->
             <button class="text-gray-400 hover:text-white p-2 rounded-lg transition-colors">
@@ -63,12 +64,13 @@
         <div class="max-w-5xl mx-auto rounded-xl shadow-2xl overflow-hidden border border-gray-700/50">
             <!-- Widget Header -->
             <div class="bg-primary-dark p-4 flex justify-between items-center border-b border-gray-700">
-                <h1 class="text-lg font-semibold text-gray-100">Neutron Linkvertise</h1>
+                <!-- System Name - Changed to Ronash Key System -->
+                <h1 class="text-lg font-semibold text-gray-100">Ronash Key System</h1>
                 <div class="flex items-center space-x-4">
-                    <!-- Progress Text -->
-                    <span class="text-sm font-medium text-gray-300">Progress: 1/2</span>
+                    <!-- Progress Text - Stays at 1/2 as requested to start here -->
+                    <span id="progress-text" class="text-sm font-medium text-gray-300">Progress: 1/2</span>
                     <!-- NEXT Button -->
-                    <button class="bg-accent-green hover:bg-green-600 text-secondary-dark text-sm font-bold py-1.5 px-3 rounded-lg shadow-md transition duration-200 uppercase">
+                    <button id="next-btn" class="bg-gray-700 cursor-not-allowed text-gray-400 text-sm font-bold py-1.5 px-3 rounded-lg shadow-md transition duration-200 uppercase" disabled>
                         NEXT
                         <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline ml-1 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
@@ -77,26 +79,26 @@
                 </div>
             </div>
 
-            <!-- Progress Bar -->
+            <!-- Progress Bar - 50% for 1/2 -->
             <div class="bg-primary-dark px-4 pb-4">
                 <div class="h-1.5 w-full bg-gray-700 rounded-full">
-                    <div class="h-1.5 bg-accent-green rounded-full" style="width: 50%;"></div>
+                    <div id="progress-bar" class="h-1.5 bg-accent-green rounded-full transition-all duration-500" style="width: 50%;"></div>
                 </div>
             </div>
 
             <!-- Table Header/Status Row -->
             <div class="bg-secondary-dark/50 p-4 border-b border-gray-700 grid grid-cols-4 gap-2 text-xs font-medium uppercase text-gray-400">
-                <!-- Column 1: YOUR KEYS -->
+                <!-- Column 1: KEY STATUS -->
                 <div class="col-span-1">
-                    YOUR KEYS (<span id="key-count">0/5</span>)
+                    KEY STATUS
                 </div>
                 <!-- Column 2: TIME LEFT -->
                 <div class="col-span-1">
                     TIME LEFT
                 </div>
-                <!-- Column 3: STATUS -->
+                <!-- Column 3: VALIDATION -->
                 <div class="col-span-1">
-                    STATUS
+                    VALIDATION
                 </div>
                 <!-- Column 4: ACTIONS -->
                 <div class="col-span-1 text-right">
@@ -104,48 +106,115 @@
                 </div>
             </div>
 
-            <!-- Empty State / Key List Container -->
-            <div class="bg-primary-dark p-4 text-center">
-                <!-- Key List would go here (omitted for the static layout) -->
-                <p class="text-sm text-gray-500 py-4">No keys generated yet.</p>
-                <!-- GET A NEW KEY Button -->
-                <button id="get-key-btn" class="bg-transparent border border-accent-green text-accent-green hover:bg-accent-green hover:text-secondary-dark text-sm font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out mt-2">
-                    + GET A NEW KEY
-                </button>
+            <!-- Key Status Row -->
+            <div class="bg-primary-dark p-4 flex items-center justify-between text-sm">
+                <!-- Status Display -->
+                <div class="col-span-1 text-red-400 font-semibold" id="key-status-display">
+                    LOCKED
+                </div>
+                <!-- Time Left (Mock Data) -->
+                <div class="col-span-1 text-gray-400">
+                    N/A
+                </div>
+                <!-- Validation Status (Mock Data) -->
+                <div class="col-span-1 text-gray-400">
+                    PENDING
+                </div>
+                <!-- Actions Button -->
+                <div class="col-span-1 text-right">
+                    <!-- GET A NEW KEY Button -->
+                    <button id="get-key-btn" class="bg-transparent border border-accent-green text-accent-green hover:bg-accent-green hover:text-secondary-dark text-xs font-bold py-1.5 px-3 rounded-lg transition duration-200 ease-in-out">
+                        + GET UNLI KEY
+                    </button>
+                </div>
+            </div>
+
+            <!-- Instruction/Alert Area -->
+            <div id="instruction-area" class="bg-primary-dark p-4 text-center border-t border-gray-700/50">
+                <p class="text-sm text-gray-500 py-2">Click "+ GET UNLI KEY" to start the 2-step process.</p>
             </div>
         </div>
     </main>
 
-    <!-- JavaScript for basic interaction and logging -->
+    <!-- JavaScript for key system logic -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const getKeyButton = document.getElementById('get-key-btn');
+            const keyStatusDisplay = document.getElementById('key-status-display');
             
-            // Simple click handler for the button
+            // The URL for the first checkpoint as requested
+            const checkpointUrl = 'https://workink.net/23PZ/Ronash%20hub'; 
+
+            // Initialize key status logic
+            // In a real app, this would check localStorage or an API for the current key state
+            let keyStatus = 'LOCKED'; // Can be 'LOCKED', 'CHECKPOINT_1_COMPLETE', or 'UNLOCKED'
+
+            function updateUI() {
+                if (keyStatus === 'UNLOCKED') {
+                    keyStatusDisplay.textContent = 'UNLIMITED';
+                    keyStatusDisplay.classList.remove('text-red-400');
+                    keyStatusDisplay.classList.add('text-accent-green');
+                    getKeyButton.textContent = 'KEY VALID';
+                    getKeyButton.disabled = true;
+                    getKeyButton.classList.add('cursor-not-allowed', 'opacity-50');
+                    document.getElementById('instruction-area').innerHTML = '<p class="text-sm text-accent-green py-2">Key is validated. Enjoy Ronash Hub!</p>';
+                    document.getElementById('progress-text').textContent = 'Progress: 2/2';
+                    document.getElementById('progress-bar').style.width = '100%';
+                    document.getElementById('next-btn').disabled = false;
+                    document.getElementById('next-btn').classList.remove('bg-gray-700', 'cursor-not-allowed', 'text-gray-400');
+                    document.getElementById('next-btn').classList.add('bg-accent-green', 'hover:bg-green-600', 'text-secondary-dark');
+
+                } else if (keyStatus === 'LOCKED') {
+                    keyStatusDisplay.textContent = 'LOCKED';
+                    keyStatusDisplay.classList.add('text-red-400');
+                    keyStatusDisplay.classList.remove('text-accent-green');
+                    getKeyButton.textContent = '+ GET UNLI KEY';
+                    getKeyButton.disabled = false;
+                    getKeyButton.classList.remove('cursor-not-allowed', 'opacity-50');
+                }
+            }
+
+            // --- Key Generation Logic ---
             if (getKeyButton) {
                 getKeyButton.addEventListener('click', () => {
-                    console.log("'+ GET A NEW KEY' button clicked.");
-                    // In a real application, this would trigger an API call or a modal.
-                    alertMessage("Attempting to get a new key...");
+                    if (keyStatus === 'LOCKED') {
+                        // Redirect to the first key generation checkpoint
+                        alertMessage(`You are about to start the 2-step process. You will be redirected to ${checkpointUrl}.`, () => {
+                            window.open(checkpointUrl, '_blank');
+                            // After redirecting, update status (assuming user will complete the step)
+                            // In a real flow, you would need to check for completion on return.
+                            setTimeout(() => {
+                                alertMessage("You should now complete the first step on the new tab. Once done, refresh this page and try validating your key.");
+                            }, 500); 
+                        });
+                    } else if (keyStatus === 'UNLOCKED') {
+                        alertMessage("Your key is already valid and unlimited.");
+                    }
                 });
             }
 
-            // Custom alert/message box function (replaces alert() for mobile friendliness)
-            function alertMessage(message) {
-                // Check if a message box already exists
-                let msgBox = document.getElementById('custom-message-box');
-                if (msgBox) {
-                    msgBox.remove();
+            // Mock 'Next' Button logic (assuming successful key)
+            document.getElementById('next-btn').addEventListener('click', () => {
+                if (keyStatus === 'UNLOCKED') {
+                    alertMessage("Navigation to the next step (e.g., executing the hub) is complete.");
+                    console.log("Next step initiated.");
+                } else {
+                    alertMessage("Please validate your key first (Progress 1/2) before proceeding.");
                 }
+            });
 
-                // Create the message box element
+            // --- Custom Alert/Message Box Function ---
+            function alertMessage(message, onConfirm = () => {}) {
+                let msgBox = document.getElementById('custom-message-box');
+                if (msgBox) msgBox.remove();
+
                 msgBox = document.createElement('div');
                 msgBox.id = 'custom-message-box';
-                msgBox.className = 'fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50 transition-opacity duration-300';
+                msgBox.className = 'fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 transition-opacity duration-300';
                 msgBox.innerHTML = `
-                    <div class="bg-primary-dark p-6 rounded-lg shadow-xl max-w-sm w-11/12 border border-gray-700">
+                    <div class="bg-primary-dark p-6 rounded-xl shadow-2xl max-w-sm w-11/12 border border-gray-600 transform scale-100 transition-transform duration-300">
                         <p class="text-base text-white mb-4">${message}</p>
-                        <button id="msg-ok-btn" class="w-full bg-accent-green hover:bg-green-600 text-secondary-dark font-semibold py-2 rounded-lg">
+                        <button id="msg-ok-btn" class="w-full bg-accent-green hover:bg-green-600 text-secondary-dark font-semibold py-2 rounded-lg transition-colors">
                             OK
                         </button>
                     </div>
@@ -154,15 +223,23 @@
 
                 // Add close functionality
                 document.getElementById('msg-ok-btn').addEventListener('click', () => {
+                    onConfirm(); // Execute confirmation action
                     msgBox.classList.add('opacity-0');
                     setTimeout(() => msgBox.remove(), 300);
                 });
             }
+
+            // For demonstration: you can manually change 'keyStatus' in the console 
+            // to 'UNLOCKED' and call updateUI() to see the successful state:
+            // keyStatus = 'UNLOCKED'; updateUI();
+
+            updateUI();
         });
     </script>
 
 </body>
 </html>
+
 
 
 
