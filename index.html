@@ -1,38 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Key System - Get Key</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML, CSS, JS Demo</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
-    <h1>Get Your Key</h1>
-    <p>Complete the checkpoints below to obtain your key. Each checkpoint involves viewing ads.</p>
-    <div id="progress">Progress: 0/2</div>
-    
-    <div class="step" id="step1">
-      <h2>Checkpoint 1</h2>
-      <button class="btn ad-btn" onclick="startAd(1)">Start Checkpoint 1 (Open Ad)</button>
-      <p id="countdown1" class="countdown hidden"></p>
-      <button class="btn continue-btn hidden" id="continue1" onclick="completeStep(1)" disabled>I Completed the Ad - Continue</button>
-    </div>
-    
-    <div class="step hidden" id="step2">
-      <h2>Checkpoint 2</h2>
-      <button class="btn ad-btn" onclick="startAd(2)">Start Checkpoint 2 (Open Ad)</button>
-      <p id="countdown2" class="countdown hidden"></p>
-      <button class="btn continue-btn hidden" id="continue2" onclick="completeStep(2)" disabled>I Completed the Ad - Continue</button>
-    </div>
-    
-    <div class="hidden" id="key-section">
-      <h2>Your Generated Key</h2>
-      <p id="generated-key"></p>
-      <p>Note: This key is generated client-side for demo purposes. Copy it now!</p>
-    </div>
-  </div>
 
-  <script src="script.js"></script>
+    <header>
+        <h1>The HTML/CSS/JS Trio</h1>
+    </header>
+
+    <p id="target-text">Click the button below to see the magic!</p>
+
+    <button id="change-button">Click Me</button>
+
+    <script src="script.js"></script>
 </body>
 </html>
+
