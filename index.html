@@ -4,242 +4,301 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ronash Key System</title>
-    <!-- Load Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Configure Tailwind to use Inter font and custom colors -->
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        'primary-dark': '#1e293b', // Deep Indigo for the main panel
-                        'secondary-dark': '#0f172a', // Even darker for the header
-                        'accent-green': '#10b981', // Bright Green for NEXT button/progress
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        /* Custom styles to simulate the mountain background effect */
-        .bg-mountain {
-            background-color: #2c2543;
-            /* Placeholder for the dark mountain image - replaced with a gradient for simplicity */
-            background-image: linear-gradient(180deg, rgba(30, 41, 59, 0.9) 0%, rgba(30, 41, 59, 0.5) 100%), 
-                              url('https://placehold.co/1280x720/2c2543/ffffff?text='); 
-            background-size: cover;
-            background-position: center;
-        }
-
-        /* Set font to Inter */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
         body {
             font-family: 'Inter', sans-serif;
-            min-height: 100vh;
+            margin: 0; padding: 0; background-color: #0d0d12; color: #e0e0e0;
+            min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+        }
+        .bg-mountain {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1;
+            background: radial-gradient(at 50% 100%, #1a1a2e 0%, #0d0d12 100%), linear-gradient(180deg, rgba(30, 30, 45, 0.6) 0%, rgba(13, 13, 18, 1) 100%);
+        }
+        .text-accent-green { color: #50fa7b; }
+        .bg-dark-panel { background-color: rgba(22, 22, 33, 0.9); }
+        .key-row-grid {
+            display: grid; grid-template-columns: 2fr 1.5fr 1fr 1.5fr; gap: 0.5rem; align-items: center;
+        }
+        @media (max-width: 640px) {
+            .key-row-grid { grid-template-columns: 1fr; gap: 0.25rem; }
+            .key-header-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
+<body class="p-4 sm:p-6">
+    <div class="bg-mountain"></div>
 
-<body class="bg-mountain text-white min-h-screen flex flex-col antialiased">
-
-    <!-- Top Navigation Bar (Header) -->
-    <header class="bg-secondary-dark/80 backdrop-blur-sm shadow-lg border-b border-gray-700/50">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
-            <!-- Logo/Site Name - Changed to Ronash -->
-            <a href="#" class="text-lg font-extrabold tracking-wider text-gray-50 uppercase">Ronash</a>
-            
-            <!-- Menu Button (Hamburger) -->
-            <button class="text-gray-400 hover:text-white p-2 rounded-lg transition-colors">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
+    <header class="w-full max-w-2xl bg-dark-panel shadow-2xl rounded-xl mb-4">
+        <div class="flex justify-between items-center p-4">
+            <div class="text-xl font-bold text-accent-green">Ronash</div>
+            <button id="main-progress-btn" class="px-3 py-1 bg-green-600 hover:bg-green-700 text-white font-semibold text-sm rounded-lg transition duration-200 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+                START
             </button>
         </div>
     </header>
 
-    <!-- Main Content (Dashboard Widget) -->
-    <main class="flex-grow pt-4 px-4 sm:px-6 lg:px-8">
-        <div class="max-w-5xl mx-auto rounded-xl shadow-2xl overflow-hidden border border-gray-700/50">
-            <!-- Widget Header -->
-            <div class="bg-primary-dark p-4 flex justify-between items-center border-b border-gray-700">
-                <!-- System Name - Changed to Ronash Key System -->
-                <h1 class="text-lg font-semibold text-gray-100">Ronash Key System</h1>
-                <div class="flex items-center space-x-4">
-                    <!-- Progress Text - Stays at 1/2 as requested to start here -->
-                    <span id="progress-text" class="text-sm font-medium text-gray-300">Progress: 1/2</span>
-                    <!-- NEXT Button -->
-                    <button id="next-btn" class="bg-gray-700 cursor-not-allowed text-gray-400 text-sm font-bold py-1.5 px-3 rounded-lg shadow-md transition duration-200 uppercase" disabled>
-                        NEXT
-                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 inline ml-1 -mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                        </svg>
-                    </button>
+    <main class="w-full max-w-2xl bg-dark-panel rounded-xl shadow-2xl overflow-hidden">
+        <div class="p-4 border-b border-gray-800">
+            <h2 class="text-lg font-semibold text-white">Ronash Key System</h2>
+        </div>
+
+        <div class="p-4 border-b border-gray-800 flex flex-col sm:flex-row justify-between items-start sm:items-center">
+            <div class="text-sm font-medium text-gray-400 mb-2 sm:mb-0">
+                Progress: <span id="progress-text" class="text-white font-bold">0/2</span>
+            </div>
+            <div class="w-full sm:w-1/2">
+                <div class="h-2 bg-gray-700 rounded-full overflow-hidden">
+                    <div id="progress-bar" class="h-2 bg-accent-green transition-all duration-500" style="width: 0%;"></div>
                 </div>
             </div>
+        </div>
 
-            <!-- Progress Bar - 50% for 1/2 -->
-            <div class="bg-primary-dark px-4 pb-4">
-                <div class="h-1.5 w-full bg-gray-700 rounded-full">
-                    <div id="progress-bar" class="h-1.5 bg-accent-green rounded-full transition-all duration-500" style="width: 50%;"></div>
-                </div>
+        <div class="p-4 bg-gray-900 border-b border-gray-700">
+            <p id="instruction-area" class="text-sm text-gray-300 italic">
+                Start the key retrieval process by clicking the START button.
+            </p>
+        </div>
+
+        <div class="hidden sm:grid p-4 key-row-grid text-xs font-semibold uppercase text-gray-400 bg-gray-900 key-header-grid">
+            <div>KEY STATUS</div>
+            <div>TIME LEFT</div>
+            <div>VALIDATION</div>
+            <div>ACTIONS</div>
+        </div>
+
+        <div class="p-4 key-row-grid border-t border-gray-800">
+            <div class="flex flex-col">
+                <span class="sm:hidden text-xs uppercase font-semibold text-gray-400">KEY STATUS</span>
+                <span id="key-status-display" class="font-mono text-sm break-all text-red-400">LOCKED</span>
             </div>
-
-            <!-- Table Header/Status Row -->
-            <div class="bg-secondary-dark/50 p-4 border-b border-gray-700 grid grid-cols-4 gap-2 text-xs font-medium uppercase text-gray-400">
-                <!-- Column 1: KEY STATUS -->
-                <div class="col-span-1">
-                    KEY STATUS
-                </div>
-                <!-- Column 2: TIME LEFT -->
-                <div class="col-span-1">
-                    TIME LEFT
-                </div>
-                <!-- Column 3: VALIDATION -->
-                <div class="col-span-1">
-                    VALIDATION
-                </div>
-                <!-- Column 4: ACTIONS -->
-                <div class="col-span-1 text-right">
-                    ACTIONS
-                </div>
+            <div class="flex flex-col">
+                <span class="sm:hidden text-xs uppercase font-semibold text-gray-400">TIME LEFT</span>
+                <span id="key-time-display" class="text-sm text-gray-300">N/A</span>
             </div>
-
-            <!-- Key Status Row -->
-            <div class="bg-primary-dark p-4 flex items-center justify-between text-sm">
-                <!-- Status Display -->
-                <div class="col-span-1 text-red-400 font-semibold" id="key-status-display">
-                    LOCKED
-                </div>
-                <!-- Time Left (Mock Data) -->
-                <div class="col-span-1 text-gray-400">
-                    N/A
-                </div>
-                <!-- Validation Status (Mock Data) -->
-                <div class="col-span-1 text-gray-400">
-                    PENDING
-                </div>
-                <!-- Actions Button -->
-                <div class="col-span-1 text-right">
-                    <!-- GET A NEW KEY Button -->
-                    <button id="get-key-btn" class="bg-transparent border border-accent-green text-accent-green hover:bg-accent-green hover:text-secondary-dark text-xs font-bold py-1.5 px-3 rounded-lg transition duration-200 ease-in-out">
-                        + GET UNLI KEY
-                    </button>
-                </div>
+            <div class="flex flex-col">
+                <span class="sm:hidden text-xs uppercase font-semibold text-gray-400">VALIDATION</span>
+                <span id="key-validation-display" class="text-sm text-red-500 font-bold">INVALID</span>
             </div>
-
-            <!-- Instruction/Alert Area -->
-            <div id="instruction-area" class="bg-primary-dark p-4 text-center border-t border-gray-700/50">
-                <p class="text-sm text-gray-500 py-2">Click "+ GET UNLI KEY" to start the 2-step process.</p>
+            <div class="flex flex-col">
+                <span class="sm:hidden text-xs uppercase font-semibold text-gray-400">ACTIONS</span>
+                <button id="action-btn" class="w-full px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-lg transition duration-200 shadow-md">
+                    + GET UNLI KEY
+                </button>
             </div>
         </div>
     </main>
 
-    <!-- JavaScript for key system logic -->
+    <div id="message-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden items-center justify-center p-4 z-50">
+        <div class="bg-gray-800 p-6 rounded-lg shadow-2xl max-w-sm w-full border border-indigo-500">
+            <h3 id="modal-title" class="text-lg font-bold text-accent-green mb-3">Notice</h3>
+            <p id="modal-message" class="text-sm text-gray-200 mb-4"></p>
+            <button id="modal-close-btn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 rounded-lg font-semibold">Close</button>
+        </div>
+    </div>
+
     <script>
+        const showMessage = (title, message) => {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-message').textContent = message;
+            document.getElementById('message-modal').classList.remove('hidden');
+            document.getElementById('message-modal').classList.add('flex');
+        };
+        document.getElementById('modal-close-btn').addEventListener('click', () => {
+            document.getElementById('message-modal').classList.remove('flex');
+            document.getElementById('message-modal').classList.add('hidden');
+        });
+        const copyToClipboard = (text) => {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            textarea.style.position = 'fixed';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+                const successful = document.execCommand('copy');
+                showMessage('Success!', successful ? 'Key copied to clipboard!' : 'Failed to copy key. Please copy manually.');
+            } catch (err) {
+                showMessage('Error', 'Failed to copy key. Please copy manually.');
+            }
+            document.body.removeChild(textarea);
+        };
+
+        const STORAGE_KEY = 'ronashKeyProgress';
+        const EXPIRATION_DURATION_MS = 24 * 60 * 60 * 1000;
+
+        const CHECKPOINTS = [
+            // Index 0 (currentProgress = 0) -> Opens Linkvertise, then advances to 1
+            { id: 1, name: "Linkvertise", url: "https://link-target.net/1424046/HPxPeiwfkobC" },
+            // Index 1 (currentProgress = 1) -> Opens Work.ink, then advances to 2
+            { id: 2, name: "Work.ink", url: "https://workink.net/23PZ/Ronash%20hub" }
+        ];
+
+        let state = { currentProgress: 0, acquiredKey: null, keyExpiryTime: null, intervalId: null };
+        
+        const $progressText = document.getElementById('progress-text');
+        const $progressBar = document.getElementById('progress-bar');
+        const $instructionArea = document.getElementById('instruction-area');
+        const $mainProgressBtn = document.getElementById('main-progress-btn');
+        const $actionBtn = document.getElementById('action-btn');
+        const $keyStatusDisplay = document.getElementById('key-status-display');
+        const $keyTimeDisplay = document.getElementById('key-time-display');
+        const $keyValidationDisplay = document.getElementById('key-validation-display');
+
+        const saveState = () => {
+            sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
+                currentProgress: state.currentProgress, acquiredKey: state.acquiredKey, keyExpiryTime: state.keyExpiryTime
+            }));
+        };
+        const loadState = () => {
+            const savedState = sessionStorage.getItem(STORAGE_KEY);
+            if (savedState) {
+                try {
+                    const loaded = JSON.parse(savedState);
+                    state.currentProgress = loaded.currentProgress || 0;
+                    state.acquiredKey = loaded.acquiredKey || null;
+                    state.keyExpiryTime = loaded.keyExpiryTime || null;
+                } catch (e) { resetKeySystem(); }
+            }
+        };
+
+        const generateMockKey = () => {
+            const randomChunk = () => Math.random().toString(36).substring(2, 7).toUpperCase();
+            return `LUARMOR-RN_${randomChunk()}-${randomChunk()}-${randomChunk()}`;
+        };
+
+        const resetKeySystem = (showAlert = false) => {
+            state.currentProgress = 0; state.acquiredKey = null; state.keyExpiryTime = null;
+            if (state.intervalId) { clearInterval(state.intervalId); state.intervalId = null; }
+            saveState(); updateUI();
+            if (showAlert) { showMessage('Key Expired', 'Your 24-hour key has expired. Please restart the process to get a new one.'); }
+        };
+
+        const updateCountdown = () => {
+            if (!state.keyExpiryTime || state.currentProgress !== 3) {
+                if (state.intervalId) clearInterval(state.intervalId);
+                return;
+            }
+            const timeRemainingMs = state.keyExpiryTime - Date.now();
+            if (timeRemainingMs <= 0) { resetKeySystem(true); return; }
+
+            const totalSeconds = Math.floor(timeRemainingMs / 1000);
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            const format = (unit) => String(unit).padStart(2, '0');
+
+            $keyTimeDisplay.textContent = `${format(hours)}:${format(minutes)}:${format(seconds)}`;
+        };
+
+        const startCountdown = () => {
+            if (state.intervalId) { clearInterval(state.intervalId); }
+            if (state.keyExpiryTime && state.keyExpiryTime > Date.now()) {
+                state.intervalId = setInterval(updateCountdown, 1000);
+                updateCountdown();
+            } else if (state.keyExpiryTime && state.keyExpiryTime <= Date.now()) {
+                resetKeySystem(false);
+            }
+        };
+
+        const updateUI = () => {
+            // State 3: Key is Active and Valid (No progress advancing button needed)
+            if (state.acquiredKey && state.keyExpiryTime && state.keyExpiryTime > Date.now()) {
+                state.currentProgress = 3; 
+
+                $progressText.textContent = '2/2'; $progressBar.style.width = '100%';
+                
+                // Button is disabled when key is active/validated
+                $mainProgressBtn.textContent = 'KEY VALIDATED'; 
+                $mainProgressBtn.disabled = true;
+
+                $instructionArea.innerHTML = '✅ Key is **VALID**. Use the copy key button below. Timer is running!';
+                $instructionArea.classList.add('text-accent-green'); $instructionArea.classList.remove('text-gray-300');
+
+                $keyStatusDisplay.textContent = state.acquiredKey;
+                $keyStatusDisplay.classList.remove('text-red-400'); $keyStatusDisplay.classList.add('text-white');
+
+                $keyValidationDisplay.textContent = 'VALID';
+                $keyValidationDisplay.classList.remove('text-red-500'); $keyValidationDisplay.classList.add('text-accent-green');
+
+                $actionBtn.textContent = 'COPY KEY';
+                $actionBtn.onclick = () => copyToClipboard(state.acquiredKey);
+                $actionBtn.disabled = false;
+                $actionBtn.classList.add('bg-accent-green', 'hover:bg-green-700');
+                $actionBtn.classList.remove('bg-indigo-600', 'hover:bg-indigo-700');
+
+                startCountdown();
+                return;
+            }
+
+            // State 0, 1, 2: Checkpoint Process
+            let nextAction;
+            let currentCheckpoint = CHECKPOINTS[state.currentProgress];
+
+            if (state.currentProgress === 0) {
+                // START button -> Linkvertise
+                $progressText.textContent = '0/2'; $progressBar.style.width = '0%';
+                $mainProgressBtn.textContent = 'START'; $mainProgressBtn.disabled = false;
+                $instructionArea.textContent = `Start the key retrieval process by clicking START. (Opens ${currentCheckpoint.name}).`;
+                nextAction = `+ VISIT ${currentCheckpoint.name}`;
+            } else if (state.currentProgress === 1) {
+                // NEXT CHECKPOINT button -> Work.ink
+                $progressText.textContent = '1/2'; $progressBar.style.width = '50%';
+                $mainProgressBtn.textContent = 'NEXT CHECKPOINT'; $mainProgressBtn.disabled = false;
+                $instructionArea.textContent = `Checkpoint 1 completed. Click NEXT CHECKPOINT to proceed. (Opens ${currentCheckpoint.name}).`;
+                nextAction = `+ VISIT ${currentCheckpoint.name}`;
+            } else if (state.currentProgress === 2) {
+                // FINISHED state
+                $progressText.textContent = '2/2'; $progressBar.style.width = '100%';
+                $mainProgressBtn.textContent = 'FINISHED'; $mainProgressBtn.disabled = true;
+                $instructionArea.textContent = 'All checkpoints complete! Click GET THE KEY in the Actions column below.';
+                nextAction = 'GET THE KEY';
+                currentCheckpoint = null;
+            } else {
+                 state.currentProgress = 0; updateUI(); return;
+            }
+
+            // Reset non-active key UI elements
+            $instructionArea.classList.remove('text-accent-green'); $instructionArea.classList.add('text-gray-300');
+            $keyStatusDisplay.textContent = 'LOCKED'; $keyStatusDisplay.classList.add('text-red-400'); $keyStatusDisplay.classList.remove('text-white');
+            $keyTimeDisplay.textContent = 'N/A';
+            $keyValidationDisplay.textContent = 'INVALID'; $keyValidationDisplay.classList.add('text-red-500'); $keyValidationDisplay.classList.remove('text-accent-green');
+            $actionBtn.textContent = nextAction;
+            $actionBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700'); $actionBtn.classList.remove('bg-accent-green', 'hover:bg-green-700');
+            $actionBtn.disabled = false;
+
+            // Header Button Logic (Opens link for the CURRENT state, AND advances state)
+            $mainProgressBtn.onclick = () => {
+                if (state.currentProgress < 2) {
+                    const nextCheckpoint = CHECKPOINTS[state.currentProgress];
+                    window.open(nextCheckpoint.url, '_blank');
+                    state.currentProgress++; // Advance progress to the next checkpoint state
+                    saveState();
+                    updateUI();
+                }
+            };
+
+            // Table Button Logic (Opens link OR gets key)
+            $actionBtn.onclick = () => {
+                if (state.currentProgress < 2 && currentCheckpoint) {
+                    // Open the link for the current checkpoint without advancing progress
+                    window.open(currentCheckpoint.url, '_blank');
+                } else if (state.currentProgress === 2) {
+                    // Final step: GET THE KEY (one-time generation)
+                    state.acquiredKey = generateMockKey();
+                    state.keyExpiryTime = Date.now() + EXPIRATION_DURATION_MS;
+                    saveState();
+                    updateUI();
+                    showMessage('Key Acquired!', 'Your 24-hour key has been successfully generated!');
+                }
+            };
+        };
+
         document.addEventListener('DOMContentLoaded', () => {
-            const getKeyButton = document.getElementById('get-key-btn');
-            const keyStatusDisplay = document.getElementById('key-status-display');
-            
-            // The URL for the first checkpoint as requested
-            const checkpointUrl = 'https://workink.net/23PZ/Ronash%20hub'; 
-
-            // Initialize key status logic
-            // In a real app, this would check localStorage or an API for the current key state
-            let keyStatus = 'LOCKED'; // Can be 'LOCKED', 'CHECKPOINT_1_COMPLETE', or 'UNLOCKED'
-
-            function updateUI() {
-                if (keyStatus === 'UNLOCKED') {
-                    keyStatusDisplay.textContent = 'UNLIMITED';
-                    keyStatusDisplay.classList.remove('text-red-400');
-                    keyStatusDisplay.classList.add('text-accent-green');
-                    getKeyButton.textContent = 'KEY VALID';
-                    getKeyButton.disabled = true;
-                    getKeyButton.classList.add('cursor-not-allowed', 'opacity-50');
-                    document.getElementById('instruction-area').innerHTML = '<p class="text-sm text-accent-green py-2">Key is validated. Enjoy Ronash Hub!</p>';
-                    document.getElementById('progress-text').textContent = 'Progress: 2/2';
-                    document.getElementById('progress-bar').style.width = '100%';
-                    document.getElementById('next-btn').disabled = false;
-                    document.getElementById('next-btn').classList.remove('bg-gray-700', 'cursor-not-allowed', 'text-gray-400');
-                    document.getElementById('next-btn').classList.add('bg-accent-green', 'hover:bg-green-600', 'text-secondary-dark');
-
-                } else if (keyStatus === 'LOCKED') {
-                    keyStatusDisplay.textContent = 'LOCKED';
-                    keyStatusDisplay.classList.add('text-red-400');
-                    keyStatusDisplay.classList.remove('text-accent-green');
-                    getKeyButton.textContent = '+ GET UNLI KEY';
-                    getKeyButton.disabled = false;
-                    getKeyButton.classList.remove('cursor-not-allowed', 'opacity-50');
-                }
-            }
-
-            // --- Key Generation Logic ---
-            if (getKeyButton) {
-                getKeyButton.addEventListener('click', () => {
-                    if (keyStatus === 'LOCKED') {
-                        // Redirect to the first key generation checkpoint
-                        alertMessage(`You are about to start the 2-step process. You will be redirected to ${checkpointUrl}.`, () => {
-                            window.open(checkpointUrl, '_blank');
-                            // After redirecting, update status (assuming user will complete the step)
-                            // In a real flow, you would need to check for completion on return.
-                            setTimeout(() => {
-                                alertMessage("You should now complete the first step on the new tab. Once done, refresh this page and try validating your key.");
-                            }, 500); 
-                        });
-                    } else if (keyStatus === 'UNLOCKED') {
-                        alertMessage("Your key is already valid and unlimited.");
-                    }
-                });
-            }
-
-            // Mock 'Next' Button logic (assuming successful key)
-            document.getElementById('next-btn').addEventListener('click', () => {
-                if (keyStatus === 'UNLOCKED') {
-                    alertMessage("Navigation to the next step (e.g., executing the hub) is complete.");
-                    console.log("Next step initiated.");
-                } else {
-                    alertMessage("Please validate your key first (Progress 1/2) before proceeding.");
-                }
-            });
-
-            // --- Custom Alert/Message Box Function ---
-            function alertMessage(message, onConfirm = () => {}) {
-                let msgBox = document.getElementById('custom-message-box');
-                if (msgBox) msgBox.remove();
-
-                msgBox = document.createElement('div');
-                msgBox.id = 'custom-message-box';
-                msgBox.className = 'fixed inset-0 bg-black bg-opacity-70 flex justify-center items-center z-50 transition-opacity duration-300';
-                msgBox.innerHTML = `
-                    <div class="bg-primary-dark p-6 rounded-xl shadow-2xl max-w-sm w-11/12 border border-gray-600 transform scale-100 transition-transform duration-300">
-                        <p class="text-base text-white mb-4">${message}</p>
-                        <button id="msg-ok-btn" class="w-full bg-accent-green hover:bg-green-600 text-secondary-dark font-semibold py-2 rounded-lg transition-colors">
-                            OK
-                        </button>
-                    </div>
-                `;
-                document.body.appendChild(msgBox);
-
-                // Add close functionality
-                document.getElementById('msg-ok-btn').addEventListener('click', () => {
-                    onConfirm(); // Execute confirmation action
-                    msgBox.classList.add('opacity-0');
-                    setTimeout(() => msgBox.remove(), 300);
-                });
-            }
-
-            // For demonstration: you can manually change 'keyStatus' in the console 
-            // to 'UNLOCKED' and call updateUI() to see the successful state:
-            // keyStatus = 'UNLOCKED'; updateUI();
-
+            loadState();
             updateUI();
         });
     </script>
-
 </body>
 </html>
-
-
-
 
