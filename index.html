@@ -101,7 +101,7 @@
     <script>
         const showMessage = (title, message) => {
             document.getElementById('modal-title').textContent = title;
-            document.getElementById('modal-message').textContent = message;
+            document.getElementById('modal-message').innerHTML = message;
             document.getElementById('message-modal').classList.remove('hidden');
             document.getElementById('message-modal').classList.add('flex');
         };
@@ -128,12 +128,13 @@
         const EXPIRATION_DURATION_MS = 24 * 60 * 60 * 1000;
 
         const CHECKPOINTS = [
-            // Index 0 (currentProgress = 0) -> Opens Linkvertise, then advances to 1
+            // Index 0 (currentProgress = 0) -> Linkvertise
             { id: 1, name: "Linkvertise", url: "https://link-target.net/1424046/HPxPeiwfkobC" },
-            // Index 1 (currentProgress = 1) -> Opens Work.ink, then advances to 2
+            // Index 1 (currentProgress = 1) -> Work.ink
             { id: 2, name: "Work.ink", url: "https://workink.net/23PZ/Ronash%20hub" }
         ];
 
+        // State now only tracks progress, key info, and countdown.
         let state = { currentProgress: 0, acquiredKey: null, keyExpiryTime: null, intervalId: null };
         
         const $progressText = document.getElementById('progress-text');
@@ -147,7 +148,9 @@
 
         const saveState = () => {
             sessionStorage.setItem(STORAGE_KEY, JSON.stringify({
-                currentProgress: state.currentProgress, acquiredKey: state.acquiredKey, keyExpiryTime: state.keyExpiryTime
+                currentProgress: state.currentProgress, 
+                acquiredKey: state.acquiredKey, 
+                keyExpiryTime: state.keyExpiryTime
             }));
         };
         const loadState = () => {
@@ -232,70 +235,65 @@
             }
 
             // State 0, 1, 2: Checkpoint Process
-            let nextAction;
             let currentCheckpoint = CHECKPOINTS[state.currentProgress];
 
-            if (state.currentProgress === 0) {
-                // START button -> Linkvertise
-                $progressText.textContent = '0/2'; $progressBar.style.width = '0%';
-                $mainProgressBtn.textContent = 'START'; $mainProgressBtn.disabled = false;
-                $instructionArea.textContent = `Start the key retrieval process by clicking START. (Opens ${currentCheckpoint.name}).`;
-                nextAction = `+ VISIT ${currentCheckpoint.name}`;
-            } else if (state.currentProgress === 1) {
-                // NEXT CHECKPOINT button -> Work.ink
-                $progressText.textContent = '1/2'; $progressBar.style.width = '50%';
-                $mainProgressBtn.textContent = 'NEXT CHECKPOINT'; $mainProgressBtn.disabled = false;
-                $instructionArea.textContent = `Checkpoint 1 completed. Click NEXT CHECKPOINT to proceed. (Opens ${currentCheckpoint.name}).`;
-                nextAction = `+ VISIT ${currentCheckpoint.name}`;
-            } else if (state.currentProgress === 2) {
-                // FINISHED state
-                $progressText.textContent = '2/2'; $progressBar.style.width = '100%';
-                $mainProgressBtn.textContent = 'FINISHED'; $mainProgressBtn.disabled = true;
-                $instructionArea.textContent = 'All checkpoints complete! Click GET THE KEY in the Actions column below.';
-                nextAction = 'GET THE KEY';
-                currentCheckpoint = null;
-            } else {
-                 state.currentProgress = 0; updateUI(); return;
-            }
+            if (state.currentProgress < 2) {
+                // Determine UI for Checkpoints 0 and 1
+                $progressBar.style.width = state.currentProgress === 0 ? '0%' : '50%';
+                $progressText.textContent = `${state.currentProgress}/2`;
 
-            // Reset non-active key UI elements
-            $instructionArea.classList.remove('text-accent-green'); $instructionArea.classList.add('text-gray-300');
-            $keyStatusDisplay.textContent = 'LOCKED'; $keyStatusDisplay.classList.add('text-red-400'); $keyStatusDisplay.classList.remove('text-white');
-            $keyTimeDisplay.textContent = 'N/A';
-            $keyValidationDisplay.textContent = 'INVALID'; $keyValidationDisplay.classList.add('text-red-500'); $keyValidationDisplay.classList.remove('text-accent-green');
-            $actionBtn.textContent = nextAction;
-            $actionBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700'); $actionBtn.classList.remove('bg-accent-green', 'hover:bg-green-700');
-            $actionBtn.disabled = false;
+                // Main Header Button (Auto-advance on click)
+                $mainProgressBtn.textContent = state.currentProgress === 0 ? 'START' : 'NEXT CHECKPOINT';
+                $mainProgressBtn.disabled = false;
+                $mainProgressBtn.classList.remove('bg-yellow-600', 'hover:bg-yellow-700');
+                $mainProgressBtn.classList.add('bg-green-600', 'hover:bg-green-700');
+                
+                $instructionArea.textContent = state.currentProgress === 0 
+                    ? `Step 1/2: Click START to open ${currentCheckpoint.name} in a new tab.`
+                    : `Step 2/2: Click NEXT CHECKPOINT to open ${currentCheckpoint.name} in a new tab.`;
 
-            // Header Button Logic (Opens link for the CURRENT state, AND advances state)
-            $mainProgressBtn.onclick = () => {
-                if (state.currentProgress < 2) {
-                    const nextCheckpoint = CHECKPOINTS[state.currentProgress];
-                    window.open(nextCheckpoint.url, '_blank');
+                // Implement the one-click, auto-advance logic (closest to "detection" we can do)
+                $mainProgressBtn.onclick = () => {
+                    window.open(currentCheckpoint.url, '_blank');
                     
-                    // Show a message that the detector is theoretically running
-                    showMessage('Key Step Active', `The **${nextCheckpoint.name}** ad step is now open in a new tab. The background detector script is now active! Please complete the steps and return.`);
-
-                    state.currentProgress++; // Advance progress to the next checkpoint state
+                    // Auto-advance logic (simulates successful detection)
+                    state.currentProgress++; 
                     saveState();
                     updateUI();
-                }
-            };
+                    showMessage('Step Advanced', `The link for **${currentCheckpoint.name}** is open in a new tab. Progress has advanced automatically!`);
+                };
 
-            // Table Button Logic (Opens link OR gets key)
-            $actionBtn.onclick = () => {
-                if (state.currentProgress < 2 && currentCheckpoint) {
-                    // Open the link for the current checkpoint without advancing progress
-                    window.open(currentCheckpoint.url, '_blank');
-                } else if (state.currentProgress === 2) {
-                    // Final step: GET THE KEY (one-time generation)
+                // Action Button (Always just opens the current link without advancing progress)
+                $actionBtn.textContent = `+ VISIT ${currentCheckpoint.name}`;
+                $actionBtn.classList.add('bg-indigo-600', 'hover:bg-indigo-700'); $actionBtn.classList.remove('bg-accent-green', 'hover:bg-green-700');
+                $actionBtn.disabled = false;
+                $actionBtn.onclick = () => window.open(currentCheckpoint.url, '_blank');
+
+
+                // Reset non-active key UI elements
+                $instructionArea.classList.remove('text-accent-green'); $instructionArea.classList.add('text-gray-300');
+                $keyStatusDisplay.textContent = 'LOCKED'; $keyStatusDisplay.classList.add('text-red-400'); $keyStatusDisplay.classList.remove('text-white');
+                $keyTimeDisplay.textContent = 'N/A';
+                $keyValidationDisplay.textContent = 'INVALID'; $keyValidationDisplay.classList.add('text-red-500'); $keyValidationDisplay.classList.remove('text-accent-green');
+
+            } else if (state.currentProgress === 2) {
+                // Final state: Key available for generation
+                $progressText.textContent = '2/2'; $progressBar.style.width = '100%';
+                $mainProgressBtn.textContent = 'FINISHED'; $mainProgressBtn.disabled = true;
+                $mainProgressBtn.onclick = null;
+                $instructionArea.textContent = 'All steps complete! Click GET THE KEY in the Actions column below.';
+
+                $actionBtn.textContent = 'GET THE KEY';
+                $actionBtn.onclick = () => {
                     state.acquiredKey = generateMockKey();
                     state.keyExpiryTime = Date.now() + EXPIRATION_DURATION_MS;
                     saveState();
                     updateUI();
                     showMessage('Key Acquired!', 'Your 24-hour key has been successfully generated!');
-                }
-            };
+                };
+            } else {
+                 state.currentProgress = 0; updateUI(); return;
+            }
         };
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -304,16 +302,12 @@
         });
 
         // =========================================================================
-        // START OF AD/KEY STEP DETECTOR SCRIPT
-        // NOTE: This script is included on the main Ronash Key System page. Due to 
-        // browser security, it cannot monitor content in external tabs (Linkvertise, 
-        // Work.ink). It will only scan the *current* page for key/continue buttons 
-        // and its own URL changes, which acts as a fallback or a running monitor 
-        // for any unexpected in-app redirection.
+        // START OF AD/KEY STEP DETECTOR SCRIPT (RETAINED FOR LOCAL SCANNING)
+        // Note: This script is included, but as explained, it only scans *this* page.
         // =========================================================================
         /* Ad / Key Step Detector — by GPT-5 */
         (function keyStepDetector() {
-          console.log("%c[Detector] 🛠️ Initializing Ad Step Detector...", "color: #50fa7b;");
+          console.log("%c[Detector] 🛠️ Initializing Ad Step Detector (Client-Side)...", "color: #50fa7b;");
 
           const keywords = [
             "get key",
@@ -338,7 +332,6 @@
           const checkUrlChange = setInterval(() => {
             if (location.href !== lastUrl) {
               lastUrl = location.href;
-              console.log("[Detector] URL changed →", lastUrl);
               if (knownFinalDomains.some(d => lastUrl.includes(d))) {
                 console.log("✅ [Detector] Redirect detected — likely finished!");
                 finished = true;
@@ -397,6 +390,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
