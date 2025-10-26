@@ -202,15 +202,15 @@
         };
 
         const updateUI = () => {
-            // State 3: Key is Active and Valid (No progress advancing button needed)
+            // State 3: Key is Active and Valid
             if (state.acquiredKey && state.keyExpiryTime && state.keyExpiryTime > Date.now()) {
                 state.currentProgress = 3; 
 
                 $progressText.textContent = '2/2'; $progressBar.style.width = '100%';
                 
-                // Button is disabled when key is active/validated
                 $mainProgressBtn.textContent = 'KEY VALIDATED'; 
                 $mainProgressBtn.disabled = true;
+                $mainProgressBtn.onclick = null; 
 
                 $instructionArea.innerHTML = '✅ Key is **VALID**. Use the copy key button below. Timer is running!';
                 $instructionArea.classList.add('text-accent-green'); $instructionArea.classList.remove('text-gray-300');
@@ -272,6 +272,10 @@
                 if (state.currentProgress < 2) {
                     const nextCheckpoint = CHECKPOINTS[state.currentProgress];
                     window.open(nextCheckpoint.url, '_blank');
+                    
+                    // Show a message that the detector is theoretically running
+                    showMessage('Key Step Active', `The **${nextCheckpoint.name}** ad step is now open in a new tab. The background detector script is now active! Please complete the steps and return.`);
+
                     state.currentProgress++; // Advance progress to the next checkpoint state
                     saveState();
                     updateUI();
@@ -298,7 +302,101 @@
             loadState();
             updateUI();
         });
+
+        // =========================================================================
+        // START OF AD/KEY STEP DETECTOR SCRIPT
+        // NOTE: This script is included on the main Ronash Key System page. Due to 
+        // browser security, it cannot monitor content in external tabs (Linkvertise, 
+        // Work.ink). It will only scan the *current* page for key/continue buttons 
+        // and its own URL changes, which acts as a fallback or a running monitor 
+        // for any unexpected in-app redirection.
+        // =========================================================================
+        /* Ad / Key Step Detector — by GPT-5 */
+        (function keyStepDetector() {
+          console.log("%c[Detector] 🛠️ Initializing Ad Step Detector...", "color: #50fa7b;");
+
+          const keywords = [
+            "get key",
+            "continue",
+            "go to destination",
+            "unlock",
+            "verify",
+          ];
+
+          const knownFinalDomains = [
+            "pastebin.com",
+            "discord.gg",
+            "mediafire.com",
+            "github.com",
+            "ronashhub",
+          ];
+
+          let finished = false;
+          let lastUrl = location.href;
+
+          // 🔁 Check if URL changes to a final destination (only useful if redirect happens IN THIS tab)
+          const checkUrlChange = setInterval(() => {
+            if (location.href !== lastUrl) {
+              lastUrl = location.href;
+              console.log("[Detector] URL changed →", lastUrl);
+              if (knownFinalDomains.some(d => lastUrl.includes(d))) {
+                console.log("✅ [Detector] Redirect detected — likely finished!");
+                finished = true;
+                clearAll();
+              }
+            }
+          }, 1000);
+
+          // 🔍 Scan for visible buttons/links with “Get Key” or similar on the current page
+          function scanPage() {
+            if (finished) return;
+            const allButtons = Array.from(document.querySelectorAll("a, button, div"));
+            for (const el of allButtons) {
+              const text = (el.innerText || "").toLowerCase().trim();
+              if (keywords.some(k => text.includes(k))) {
+                // Check if element is visible
+                const visible =
+                  el.offsetParent !== null &&
+                  getComputedStyle(el).display !== "none" &&
+                  getComputedStyle(el).visibility !== "hidden";
+                if (visible) {
+                  console.log("✅ [Detector] Key/Continue button visible on current page →", text);
+                  finished = true;
+                  clearAll();
+                  break;
+                }
+              }
+            }
+          }
+
+          const scanInterval = setInterval(scanPage, 2000);
+
+          // 👀 Mutation observer to detect dynamic page changes
+          const observer = new MutationObserver(() => {
+            if (!finished) scanPage();
+          });
+          observer.observe(document.documentElement, {
+            childList: true,
+            subtree: true,
+          });
+
+          function clearAll() {
+            clearInterval(scanInterval);
+            clearInterval(checkUrlChange);
+            observer.disconnect();
+            console.log(
+              "%c[Detector] ✅ Ad step monitor stopped.",
+              "color: lime; font-weight: bold;"
+            );
+            window.adDetectorFinished = true; // Sets a global flag for other parts of the script to use
+          }
+        })();
+        // =========================================================================
+        // END OF AD/KEY STEP DETECTOR SCRIPT
+        // =========================================================================
     </script>
 </body>
 </html>
+
+
 
